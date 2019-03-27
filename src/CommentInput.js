@@ -22,6 +22,9 @@ class CommentInput extends Component {
   }
 
   handleBtnClick = (e)=>{
+    if (!e) return
+    if (!e.username) return alert('请输入用户名')
+    if (!e.content) return alert('请输入评论内容')
     if(this.props.onSubmit){
       const {username, content} = this.state;
       this.props.onSubmit({username, content});
