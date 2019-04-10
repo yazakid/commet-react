@@ -1,18 +1,45 @@
 import React, { Component } from 'react';
-
+import PropTypes from 'prop-types'
 class CommentInput extends Component {
+  static propTypes = {
+    onSubmit: PropTypes.func
+  }
+
   constructor(){
     super();
     this.state = {
       username:'',
-      content:''
+      content:'',
+      createdTime:''
     }
+  }
+  componentWillMount(){
+    this._loadUserName()
+  }
+
+  componentDidMount(){
+    this.textarea.focus()
   }
 
   handleInputClick(e){
     this.setState({
       username: e.target.value
     })
+  }
+
+  _saveUserName(username){
+    localStorage.setItem('username', username)
+  }
+
+  _loadUserName(){
+    const username = localStorage.getItem('username')
+    if(username){
+      this.setState({ username })
+    }
+  }
+
+  handleUserNameBlur(e){
+    this._saveUserName(e.target.value)
   }
 
   handleTextClick = (e)=>{
@@ -24,12 +51,12 @@ class CommentInput extends Component {
   handleBtnClick = (e)=>{
     if(this.props.onSubmit){
       const {username, content} = this.state;
-      this.props.onSubmit({username, content});
+      this.props.onSubmit({username, content, createdTime: +new Date()});
     }else{
       alert('无效信息')
     }
     this.setState({
-      username:'',
+      // username:'',
       content: ''
       })
   }
@@ -41,13 +68,13 @@ class CommentInput extends Component {
         <div className='comment-field'>
           <span className='comment-field-name'>用户名：</span>
           <div className='comment-field-input'>
-            <input value={username} onChange={this.handleInputClick.bind(this)}/>
+            <input onBlur={this.handleUserNameBlur.bind(this)} value={username} onChange={this.handleInputClick.bind(this)}/>
           </div>
         </div>
         <div className='comment-field'>
           <span className='comment-field-name'>评论内容：</span>
           <div className='comment-field-input'>
-            <textarea value={content} onChange={this.handleTextClick.bind(this)}/>
+            <textarea ref={(textarea)=>this.textarea = textarea} value={content} onChange={this.handleTextClick.bind(this)}/>
           </div>
         </div>
         <div className='comment-field-button'>
